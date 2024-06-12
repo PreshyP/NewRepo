@@ -1,4 +1,8 @@
 ﻿@page "/registration"
+@using LoginBlazorApp.Services
+@using LoginBlazorApp.Models
+@inject IJSRuntime JS
+@inject IAppService AppServices
 <h3>Registration</h3>
 
 <div>
@@ -54,8 +58,35 @@
 
 
 <div class="text-center mt-2">
-<button class="btn btn-primary" type="submit">Register</button>
+<button class="btn btn-primary" type="submit">
+        <span class="@_spnnerClass" role="status" aria-hidden="true"></span>
+    Register</button>
 </div>
 @code {
+
+    RegistrationModel registrationModel = new();
+    private const string Message = "Valid username or password";
+    private string _spnnerClass = "";
+
+    private async Task Submit()
+    {
+        _spnnerClass = "spinner-border spinner-border-sm";
+
+        var response = await AppServices.RegisterUser(registrationModel);
+        if (response.IsSuccess)
+        {
+            await JS.InvokeVoidAsync("showAlert", "Success", "User Registered");
+            //await App.Current.MainPage.DisplayAlert("Success", Message, "OK");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("showAlert", "Oops", response.ErrorMessage, "OK");
+            //await App.Current.MainPage.DisplayAlert("Ooops", "invalid username or password");
+        }
+
+        _spnnerClass = "";
+        this.StateHasChanged();
+    }
+
 
 }
