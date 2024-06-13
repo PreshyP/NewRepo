@@ -1,6 +1,49 @@
 ﻿@page "/geoLocation"
+@inject IJSRuntime js
+@using System.Globalization
+@using System.Threading.Tasks
+
 <h3>GeoLocation</h3>
 
-@code {
+<p>GPS tracking with Blazor.</p>
 
+<button class="btn btn-primary" @onclick="GetGeolocation">Get my Location</button>
+
+
+<hr />
+
+@if (geolocationPosition != null)
+{
+    <div>
+        Latitude: @geolocationPosition.Coords.Latitude <br />
+        Longitude: @geolocationPosition.Coords.Longitude <br />
+
+        <a target="_blank" href="@MapURL">View in Google Map</a>
+    </div>
+}
+
+@code {
+     private string MapURL;
+    private GeolocationPosition geolocationPosition;
+
+    private async Task GetGeolocation()
+    {
+        try
+        {
+            geolocationPosition = await js.InvokeAsync<GeolocationPosition>("navigator.geolocation.getCurrentPosition", new
+            {
+                enableHighAccuracy = true,
+                maximumAge = TimeSpan.FromHours(1).TotalMilliseconds,
+                timeout = TimeSpan.FromMinutes(1).TotalMilliseconds
+            });
+
+           // MapURL = $"https://www.google.com/maps/place/{geolocationPosition.Coords.Latitude},{geolocationPosition.Coords.Longitude}";
+           // MapURL ="https://www.google.com/maps/place/The+Townhouse+Hotel/@"+geolocationPosition.Coords.Latitude+","+geolocationPosition.Coords.Latitude+",53.3502092,-6.2651139,15z/data=!4m20!1m10!3m9!1s0x48670e8f443e3565:0xa26676c4d73a6e5e!2sThe+Townhouse+Hotel!5m2!4m1!1i2!8m2!3d53.3501968!4d-6.2548356!16s%2Fg%2F1tgfw104!3m8!1s0x48670e8f443e3565:0xa26676c4d73a6e5e!5m2!4m1!1i2!8m2!3d53.3501968!4d-6.2548356!16s%2Fg%2F1tgfw104?entry=ttu";
+            MapURL ="https://www.google.com/maps/place/The+Townhouse+Hotel/@"+geolocationPosition.Coords.Latitude+","+geolocationPosition.Coords.Longitude+",-6.2651139,15z/data=!4m20!1m10!3m9!1s0x48670e8f443e3565:0xa26676c4d73a6e5e!2sThe+Townhouse+Hotel!5m2!4m1!1i2!8m2!3d53.3501968!4d-6.2548356!16s%2Fg%2F1tgfw104!3m8!1s0x48670e8f443e3565:0xa26676c4d73a6e5e!5m2!4m1!1i2!8m2!3d53.3501968!4d-6.2548356!16s%2Fg%2F1tgfw104?entry=ttu";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting geolocation: {ex.Message}");
+        }
+    }
 }

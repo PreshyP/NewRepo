@@ -1,9 +1,42 @@
 ﻿@page "/speech-to-text"
+@using LoginBlazorApp.Services
 <h3>SpeechToText</h3>
 
-
+<div>
+    <Label Text="@result" FontSize="18" HorizontalOptions="Center" />
+    <Button Text="Listen" OnClick="@StartListening" HorizontalOptions="Center" />
+</div>
 
 
 @code {
 
+    private string result = string.Empty;
+
+    [Inject]
+    private LoginBlazorApp.ISpeechToText speechToText { get; set; }
+
+    [Inject]
+    private LoginBlazorApp.SpeechToTextService SpeechToTextService { get; set; }
+
+    private async Task StartListening()
+    {
+        var culture = new System.Globalization.CultureInfo("en-US");
+        var recognitionResult = new Progress<string>(partialResult =>
+        {
+            result = partialResult;
+            StateHasChanged();
+        });
+
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        var hasPermission = await SpeechToTextService.RequestPermissions();
+        if (hasPermission)
+        {
+            result = await SpeechToTextService.Listen(culture, recognitionResult, cancellationToken);
+        }
+        else
+        {
+            result = "Permission denied.";
+        }
+    }
 }

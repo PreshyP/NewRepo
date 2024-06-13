@@ -27,7 +27,7 @@ namespace LoginBlazorApp
 #if ANDROID
             //builder.Services.AddSingleton<ISpeechToText, LoginBlazorApp.Platforms.Android.SpeechToTextImplementation>();
 #elif WINDOWS
-           // builder.Services.AddSingleton<ISpeechToText, LoginBlazorApp.Platforms.Windows.SpeechToTextImplementation>();
+            builder.Services.AddSingleton<ISpeechToText, LoginBlazorApp.Platforms.Windows.SpeechToTextImplementation>();
 #endif
            // builder.Services.AddSingleton<SpeechToTextService>();
 
